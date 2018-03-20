@@ -1,0 +1,26 @@
+:root {
+    --dark-dray: #333;
+    --white: #fff;
+    --black: #000;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+
+    * {
+        box-sizing: border-box;
+    }
+}
+
+body {
+    height: 100vh;
+    background-color: var(--dark-dray);
+    color: var(--white);
+    font: var(--black) 18px monospace;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}

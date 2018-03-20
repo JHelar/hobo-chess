@@ -1,0 +1,30 @@
+{
+  "name": "hobo-chess",
+  "version": "1.0.0",
+  "description": "Hobo chess in p5",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JHelar/hobo-chess.git"
+  },
+  "keywords": [
+    "Hobo",
+    "chess"
+  ],
+  "author": "John Larsson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JHelar/hobo-chess/issues"
+  },
+  "homepage": "https://github.com/JHelar/hobo-chess#readme",
+  "dependencies": {
+    "express": "^4.16.3",
+    "lodash": "^4.17.5",
+    "node-sass": "^4.7.2",
+    "webpack": "^4.1.1",
+    "webpack-cli": "^2.0.12"
+  }
+}
