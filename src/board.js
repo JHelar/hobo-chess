@@ -1,6 +1,6 @@
 const Tile = require('./tile');
 
-const getNewTiles = board => {
+export const getNewTiles = board => {
     const tiles = [];
     let tileNumber = 1;
     for(let x = 0; x < board.size; x++){
@@ -12,7 +12,7 @@ const getNewTiles = board => {
     return tiles;
 }
 
-const getDiagonals = board => {
+export const getDiagonals = board => {
     const rows = board.rows || getRows(board);
   
     let incrementer = 0;
@@ -36,7 +36,7 @@ const getDiagonals = board => {
     return this._diagonals;
 }
 
-const getColumns = board => {
+export const getColumns = board => {
     return board.tiles.reduce((acc, tile) => {
         const key = tile.tileNumber % board.size;
         if(!acc[key]) acc[key] = [];
@@ -46,7 +46,7 @@ const getColumns = board => {
     }, []);
 }
 
-const getRows = board => {
+export const getRows = board => {
     const rows = [];
 
     for(let index = 0 ; index < board.tiles.length; index += board.size) {
@@ -55,24 +55,18 @@ const getRows = board => {
     return rows;
 }
 
-module.exports = (boardSize, tileSize) => {
+export const makeBoard = (boardSize, tileSize) => {
     let tiles = null,
         rows = null,
         columns = null,
         diagonals = null;
     
     return {
-        board: {
-            size: boardSize,
-            tileSize,
-            tiles,
-            rows,
-            columns,
-            diagonals
-        },
-        getColumns,
-        getRows,
-        getDiagonals,
-        getNewTiles
+        size: boardSize,
+        tileSize,
+        tiles,
+        rows,
+        columns,
+        diagonals
     }
 };

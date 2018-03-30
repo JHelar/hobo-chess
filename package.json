@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/JHelar/hobo-chess#readme",
   "dependencies": {
+    "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "lodash": "^4.17.5",
     "node-sass": "^4.7.2",

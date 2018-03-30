@@ -1,6 +1,14 @@
 const Human = require('./Entities/human');
 const RandomRobot = require('./Entities/robot-random');
 const _ = require('lodash');
+import {
+    makeBoard,
+    getColumns,
+    getRows,
+    getDiagonals,
+    getNewTiles
+} from './board';
+import History from './history';
 
 const SPACE_BAR = 32;
 const CANVAS_HEIGHT = 640;
@@ -14,18 +22,15 @@ const GAME_STATES = {
     WINNER: 'Winner',
     TIED: 'Tied'
 }
-const { 
-    board, 
-    getColumns, 
-    getDiagonals, 
-    getNewTiles, 
-    getRows 
-} = require('./board')(BOARD_SIZE, TILE_SIZE);
+
+const GAME_HISTORY = new History();
+const board = makeBoard(BOARD_SIZE, TILE_SIZE);
 
 
 let STATE = -1;
+let playCount = 1;
 let PLAYERS = [
-    { index: 0, entity: Human(board, 'X') },
+    { index: 0, entity: RandomRobot(board, 'X') },
     { index: 1, entity: RandomRobot(board, 'O') }
 ];
 let CURRENT_PLAYER = PLAYERS[0];
@@ -83,21 +88,18 @@ const isGameOver = () => {
     const winningPlay = getWinningPlay();
     if(!winningPlay){
         if(isTied()) {
-            setState(GAME_STATES.TIED);
-            return true;
+            return GAME_STATES.TIED;
         }
         else {
             return false;
         } 
     }else{
-        setState(GAME_STATES.WINNER);
         winningPlay.forEach(tile => tile.backgroundColor = 'green');
-        return true;
+        return GAME_STATES.WINNER;
     }
 }
 
-
-const playerMove = (type) => {
+const playAndCheck = type => {
     let madeMove = false;
     switch(type) {
         case 'human':
@@ -110,11 +112,25 @@ const playerMove = (type) => {
     }
 
     if(madeMove){
-        if(!isGameOver()) { // If not game over, toggle players
+        GAME_HISTORY.push(board);
+        const state = isGameOver()
+        if(!state) { // If not game over, toggle players
             CURRENT_PLAYER = PLAYERS.find(player => player.index !== CURRENT_PLAYER.index);
+        }else {
+            GAME_HISTORY.archive()
+                .then(() => setState(state))
+                .catch(err => alert(err))
         }
         NEED_REDRAW = true;
     }
+}
+
+const resetGame = () => {
+    board.tiles = getPropOrFetchAndSet(board, 'tiles', () => getNewTiles(board));
+    board.tiles.forEach(resetTile)
+    setState(GAME_STATES.PLAYING);
+    NEED_REDRAW = true;
+    playCount++;
 }
 
 const resetTile = tile => {
@@ -131,16 +147,13 @@ const isMouseOnBoard = () => {
 
 export function keyPressed() {
     if(STATE !== GAME_STATES.PLAYING && keyCode === SPACE_BAR) {
-        board.tiles = getPropOrFetchAndSet(board, 'tiles', () => getNewTiles(board));
-        board.tiles.forEach(resetTile)
-        setState(GAME_STATES.PLAYING);
-        NEED_REDRAW = true;
+        resetGame();
     }
 }
 
 export function mousePressed(){
     if(STATE === GAME_STATES.PLAYING && isMouseOnBoard){
-        playerMove('human');
+        playAndCheck('human');
     }
     return false;
 }
@@ -153,9 +166,11 @@ export function setup(){
 
 export function draw(){
     if(STATE === GAME_STATES.PLAYING){
-        playerMove('robot');
+        playAndCheck('robot');
     }
-
+    else if(playCount < 1000) {
+        resetGame();
+    }
     if(NEED_REDRAW){
         // Draw board
         drawBoard(board);
