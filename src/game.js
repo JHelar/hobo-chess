@@ -30,7 +30,7 @@ const board = makeBoard(BOARD_SIZE, TILE_SIZE);
 let STATE = -1;
 let playCount = 1;
 let PLAYERS = [
-    { index: 0, entity: RandomRobot(board, 'X') },
+    { index: 0, entity: Human(board, 'X') },
     { index: 1, entity: Human(board, 'O') }
 ];
 let CURRENT_PLAYER = PLAYERS[0];

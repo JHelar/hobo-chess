@@ -15,12 +15,13 @@ const calculateS = (board, marker) => {
     }, 0)
 }
 
-const calculateP = (state, prev_state) => state + (MAGIC_CONST * ( state - prev_state ));
+const calculateP = (state, prev_state) => prev_state + (MAGIC_CONST * ( state - prev_state ));
 
 export default function History(){
     this.history = [];
     
     this.push = (board, player, winner) => {
+        console.log(winner)
         this.history.push({
             board: board.tiles.slice(0).map(exportTile),
             success: {
@@ -28,51 +29,43 @@ export default function History(){
                 s_o: calculateS(board, 'O'),
                 p_x: 0.5,
                 p_o: 0.5,
-                winner
+                winner: winner || false
             },
             player
         });
     }
 
     this.setP = () => {
-        const reversedHistory = this.history.reverse();
+        const reversedHistory = this.history.slice(0).reverse();
 
-        const xHistory = reversedHistory.filter(state => {
-            console.log(state)
-            return state.player === 'X';
-        })
-    
-        const oHistory = reversedHistory.filter(state => {
-            return state.player === 'O';
-        })
+        const xHistory = reversedHistory.filter(state => state.player === 'X')
+        const oHistory = reversedHistory.filter(state => state.player === 'O')
     
         xHistory.forEach((state, index, array) => {
-            if(state.winner) {
+            if(state.success.winner) {
                 state.success.p_x = 1;
             }else {
                 const prevState = array[index - 1];
                 if(prevState) {
                     state.success.p_x = calculateP(state.success.p_x, prevState.success.p_x);
                 }else {
-                    state.success.p_x = calculateP(state.success.p_x, 0);
+                    state.success.p_x = 0;
                 }
             }
         })
     
         oHistory.forEach((state, index, array) => {
-            if(state.winner) {
+            if(state.success.winner) {
                 state.success.p_o = 1;
             }else {
                 const prevState = array[index - 1];
                 if(prevState) {
                     state.success.p_o = calculateP(state.success.p_o, prevState.success.p_o);
                 }else {
-                    state.success.p_o = calculateP(state.success.p_o, 0);
+                    state.success.p_o = 0;
                 }
             }
         })
-
-        console.log(xHistory, oHistory)
     }
 
     this.archive = () => {
