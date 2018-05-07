@@ -1,8 +1,10 @@
+const nextPossibleTile = board => board.titles.find(tile => !tile.marker);
+
 module.exports = (board, marker) => ({
+    type: 'robot',
     marker,
-    type: 'human',
-    play: (tileX, tileY) => {
-        let tile = board.tiles.find(tile => tile.x === tileX && tile.y === tileY && !tile.marker)
+    play: () => {
+        const tile = nextPossibleTile(board);
         if(tile){
             tile.marker = marker;
             return true;  

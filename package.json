@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/JHelar/hobo-chess#readme",
   "dependencies": {
+    "@tensorflow/tfjs": "^0.10.3",
     "body-parser": "^1.18.2",
     "express": "^4.16.3",
     "lodash": "^4.17.5",

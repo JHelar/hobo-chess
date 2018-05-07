@@ -31,7 +31,7 @@ let STATE = -1;
 let playCount = 1;
 let PLAYERS = [
     { index: 0, entity: RandomRobot(board, 'X') },
-    { index: 1, entity: RandomRobot(board, 'O') }
+    { index: 1, entity: Human(board, 'O') }
 ];
 let CURRENT_PLAYER = PLAYERS[0];
 let NEED_REDRAW = true;
@@ -112,11 +112,18 @@ const playAndCheck = type => {
     }
 
     if(madeMove){
-        GAME_HISTORY.push(board);
         const state = isGameOver()
+
         if(!state) { // If not game over, toggle players
+            GAME_HISTORY.push(board, CURRENT_PLAYER.entity.marker);
             CURRENT_PLAYER = PLAYERS.find(player => player.index !== CURRENT_PLAYER.index);
         }else {
+            if(state === GAME_STATES.WINNER) {
+                GAME_HISTORY.push(board, CURRENT_PLAYER.entity.marker, true);
+            }else if (state === GAME_STATES.TIED) {
+                GAME_HISTORY.push(board, CURRENT_PLAYER.entity.marker, true)
+            }
+
             GAME_HISTORY.archive()
                 .then(() => setState(state))
                 .catch(err => alert(err))
@@ -167,9 +174,6 @@ export function setup(){
 export function draw(){
     if(STATE === GAME_STATES.PLAYING){
         playAndCheck('robot');
-    }
-    else if(playCount < 1000) {
-        resetGame();
     }
     if(NEED_REDRAW){
         // Draw board
