@@ -28,7 +28,7 @@ const board = makeBoard(BOARD_SIZE, TILE_SIZE);
 
 
 let STATE = -1;
-let playCount = 1;
+let playCount = 0;
 let PLAYERS = [
     { index: 0, entity: Human(board, 'X') },
     { index: 1, entity: Human(board, 'O') }
@@ -175,6 +175,10 @@ export function draw(){
     if(STATE === GAME_STATES.PLAYING){
         playAndCheck('robot');
     }
+    // else if((STATE === GAME_STATES.TIED || STATE === GAME_STATES.WINNER) && playCount < 20000) {
+    //     playCount++;
+    //     resetGame();
+    // }
     if(NEED_REDRAW){
         // Draw board
         drawBoard(board);

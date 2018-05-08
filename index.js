@@ -4,7 +4,7 @@ const path = require('path');
 const app = express();
 const fs = require('fs');
 
-let history = [];
+let history = {};
 fs.readFile('history.json', (err, data) => {
     if(!err) {
         try{
@@ -20,10 +20,14 @@ const STATUS = {
     NOT_OK: 'NOT_OK'
 };
 
-const makeHistoryPost = game => ({
-    date: Date.now(),
-    game
-})
+const addToHistory = game => {
+    history = game.reduce((value, state) => {
+        if(!value[state.success.s_x] || state.success.p_x != 0.5) value[state.success.s_x] = state.success.p_x;
+        if(!value[state.success.s_o] || state.success.p_o != 0.5) value[state.success.s_o] = state.success.p_o;
+
+        return value;
+    }, history)
+}
 
 const makeResponse = (status, data) => ({
     status,
@@ -46,12 +50,21 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/index.html'))
 })
 
+app.get('/api/p/:state', (req, res) => {
+    const p = history[req.params.state.replace('_', '.')];
+    if(p){
+        res.send(JSON.stringify(makeResponse(STATUS.OK, p)))
+    }else {
+        res.send(JSON.stringify(makeResponse(STATUS.NOT_OK, 'Nope')))
+    }
+})
+
 app.post('/api/archive', (req, res) => {
     try{
         const requestObject =  req.body;
         if(requestObject.game){
-            const post = makeHistoryPost(requestObject.game);
-            history.push(post);
+            addToHistory(requestObject.game);
+            
             saveToFile(JSON.stringify(history), 'history.json')
                 .then(() => res.send(JSON.stringify(makeResponse(STATUS.OK))))
                 .catch(err => res.send(JSON.stringify(makeResponse(STATUS.NOT_OK, err.messages))))

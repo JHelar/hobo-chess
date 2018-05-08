@@ -21,9 +21,7 @@ export default function History(){
     this.history = [];
     
     this.push = (board, player, winner) => {
-        console.log(winner)
         this.history.push({
-            board: board.tiles.slice(0).map(exportTile),
             success: {
                 s_x: calculateS(board, 'X'),
                 s_o: calculateS(board, 'O'),
