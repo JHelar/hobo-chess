@@ -1,3 +1,5 @@
+import { calculateP, calculateS } from './boardCalcs';
+
 const MAGIC_CONST = 0.5;
 
 const exportTile = (tile, index, board) => ({
@@ -6,16 +8,7 @@ const exportTile = (tile, index, board) => ({
     marker: tile.marker ? tile.marker === 'X' ? -1 : 1 : 0,
 })
 
-const calculateS = (board, marker) => {
-    return board.tiles.reduce((value, tile) => {
-        if(tile.marker === marker) {
-            value += Math.pow(0.5, tile.tileNumber)
-        }
-        return value;
-    }, 0)
-}
 
-const calculateP = (state, prev_state) => prev_state + (MAGIC_CONST * ( state - prev_state ));
 
 export default function History(){
     this.history = [];
