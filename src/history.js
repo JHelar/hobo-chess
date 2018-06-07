@@ -1,6 +1,6 @@
 import { calculateP, calculateS } from './boardCalcs';
 
-const MAGIC_CONST = 0.5;
+let MAGIC_CONST = 0.5;
 
 const exportTile = (tile, index, board) => ({
     x: tile.x,
@@ -16,8 +16,8 @@ export default function History(){
     this.push = (board, player, winner) => {
         this.history.push({
             success: {
-                s_x: calculateS(board, 'X'),
-                s_o: calculateS(board, 'O'),
+                s_x: calculateS(board.tiles, 'X'),
+                s_o: calculateS(board.tiles, 'O'),
                 p_x: 0.5,
                 p_o: 0.5,
                 winner: winner || false
@@ -38,7 +38,7 @@ export default function History(){
             }else {
                 const prevState = array[index - 1];
                 if(prevState) {
-                    state.success.p_x = calculateP(state.success.p_x, prevState.success.p_x);
+                    state.success.p_x = calculateP(state.success.p_x, prevState.success.p_x, MAGIC_CONST);
                 }else {
                     state.success.p_x = 0;
                 }
@@ -51,7 +51,7 @@ export default function History(){
             }else {
                 const prevState = array[index - 1];
                 if(prevState) {
-                    state.success.p_o = calculateP(state.success.p_o, prevState.success.p_o);
+                    state.success.p_o = calculateP(state.success.p_o, prevState.success.p_o, MAGIC_CONST);
                 }else {
                     state.success.p_o = 0;
                 }
@@ -72,6 +72,8 @@ export default function History(){
             .then(json => {
                 if(json.status === 'OK') {
                     this.history.splice(0); // Empty the history.
+                    MAGIC_CONST -= 0.01 // Decrease Magic.
+                    if(MAGIC_CONST < 0) MAGIC_CONST = 0;
                     res(json);
                 }
                 else rej(json);

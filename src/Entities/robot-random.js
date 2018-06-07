@@ -1,4 +1,4 @@
-module.exports = (board, marker) => ({
+export default (board, marker) => ({
     type: 'robot',
     marker,
     play: () => {
@@ -6,9 +6,9 @@ module.exports = (board, marker) => ({
         const tile = tiles[(Math.random() * tiles.length) | 0];
         if(tile){
             tile.marker = marker;
-            return true;  
+            return Promise.resolve(true);  
         }else{
-            return false;
+            return Promise.resolve(false);
         }
     }
 })

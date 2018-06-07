@@ -21,12 +21,15 @@ const STATUS = {
 };
 
 const addToHistory = game => {
-    history = game.reduce((value, state) => {
-        if(!value[state.success.s_x] || state.success.p_x != 0.5) value[state.success.s_x] = state.success.p_x;
-        if(!value[state.success.s_o] || state.success.p_o != 0.5) value[state.success.s_o] = state.success.p_o;
-
+    history.x = game.filter(state => state.player === 'X').reduce((value, state) => {
+        if(!value[state.success.s_x]) value[state.success.s_x] = state.success.p_x;
         return value;
-    }, history)
+    }, history.x)
+
+    history.o = game.filter(state => state.player === 'O').reduce((value, state) => {
+        if(!value[state.success.s_o]) value[state.success.s_o] = state.success.p_o;
+        return value;
+    }, history.o)
 }
 
 const makeResponse = (status, data) => ({
@@ -50,8 +53,8 @@ app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname + '/index.html'))
 })
 
-app.get('/api/p/:state', (req, res) => {
-    const p = history[req.params.state.replace('_', '.')];
+app.get('/api/p/:marker/:state', (req, res) => {
+    const p = history[req.params.marker.toLowerCase()]&&history[req.params.marker.toLowerCase()][req.params.state.replace('_', '.')] || 0.5;
     if(p){
         res.send(JSON.stringify(makeResponse(STATUS.OK, p)))
     }else {
